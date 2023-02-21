@@ -16,7 +16,7 @@ public class ColorifyCoreClientTest {
 
     @Test
     public void checkGetSync2() {
-        ColorifyCoreClient2 colorifyCoreClient = new ColorifyCoreClient2();
+        ColorifyCoreClient colorifyCoreClient = new ColorifyCoreClient();
         String urlpath = "/hello";
         System.out.println("Sending Request to "+ urlpath);
         String output = colorifyCoreClient.getSync(urlpath,"" );

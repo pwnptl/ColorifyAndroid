@@ -17,10 +17,10 @@ public abstract class BaseNetwork {
     }
 
     public static BaseNetwork getInstance() {
-        String coreClient = ConfigReader.getProperty("coreClient");
+        String coreClient = ConfigReader.getProperty("server.coreClient");
         if (instance == null)
             if ("URLConnectionBased".equals(coreClient))
-                instance = new ColorifyCoreClient2();
+                instance = new ColorifyCoreClient();
             else
                 throw new IllegalArgumentException("No URL Connector for :" + coreClient);
         return instance;
@@ -28,7 +28,7 @@ public abstract class BaseNetwork {
 
     public abstract void setup();
 
-    public abstract String getSync(String targetURL, String urlParameters);
+    public abstract String getSync(String targetPath, String urlParameters);
 
     public abstract String getAsync();
 

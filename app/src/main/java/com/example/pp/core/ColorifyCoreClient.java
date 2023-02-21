@@ -1,10 +1,11 @@
 package com.example.pp.core;
 
 import java.io.BufferedReader;
-import java.io.InputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
+import java.util.logging.Level;
 
 public class ColorifyCoreClient extends BaseNetwork {
 
@@ -16,52 +17,29 @@ public class ColorifyCoreClient extends BaseNetwork {
     }
 
     @Override
-    public String getSync(final String targetURL, final String urlParameters) {
-        HttpURLConnection connection = null;
-
+    public String getSync(String targetPath, String urlParameters) {
+        // todo add urlParameters
+        StringBuilder stringBuilder = new StringBuilder();
         try {
-            //Create connection
-            URL url = new URL(targetURL);
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.setRequestProperty("user-agent","Mozilla/5.0 (Windows NT; Windows NT 10.0; en-IN) WindowsPowerShell/5.1.22621.963");
-//            connection.setRequestProperty("host","localhost:8080");
-//            connection.setRequestProperty("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
-//            connection.setRequestProperty("Content-Length",
-//                    Integer.toString(urlParameters.getBytes().length));
-//            connection.setRequestProperty("Content-Language", "en-US");
+            URL url = new URL("https", host, port, targetPath);
+            logger.log(Level.INFO, "Calling URL : " + url);
+            URLConnection uc = url.openConnection();
 
-//            connection.setUseCaches(false);
-//            connection.setDoOutput(true);
-//            Send request
-//            DataOutputStream wr = new DataOutputStream(
-//                    connection.getOutputStream());
-////            wr.writeBytes(urlParameters);
-//            wr.close();
+            BufferedReader in = new BufferedReader(
+                    new InputStreamReader(
+                            uc.getInputStream()));
+            String inputLine;
 
-            //Get Response
-            InputStream is = connection.getInputStream();
-            BufferedReader rd = new BufferedReader(new InputStreamReader(is));
-            StringBuilder response = new StringBuilder(); // or StringBuffer if Java version 5+
-            String line;
-            while ((line = rd.readLine()) != null) {
-                response.append(line);
-                response.append('\r');
-            }
-            rd.close();
+            while ((inputLine = in.readLine()) != null)
+                stringBuilder.append(inputLine);
+            in.close();
 
-            System.out.println("response " + connection.getResponseMessage());
-            return response.toString();
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
-            return null;
-        } finally {
-            if (connection != null) {
-                connection.disconnect();
-            }
         }
-
+        return stringBuilder.toString();
     }
+
 
     @Override
     public String getAsync() {
