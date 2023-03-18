@@ -1,5 +1,7 @@
 package com.example.pp.core;
 
+import com.example.pp.core.network.ColorifyCoreClient;
+
 import org.junit.Test;
 
 public class ColorifyCoreClientTest {
