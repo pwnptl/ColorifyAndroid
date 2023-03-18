@@ -5,15 +5,16 @@ import android.util.Log;
 import com.example.pp.core.messageHandler.MessageHandlerInterface;
 import com.example.pp.core.messageHandler.MessageHandlerRegistry;
 import com.example.pp.core.messageHandler.MessageHandlerType;
+import com.example.pp.core.utility.ObjectJsonConverter;
 
 import java.net.URI;
 import java.util.Objects;
 
 import tech.gusavila92.websocketclient.WebSocketClient;
 
-public class MyWebSocketClient extends WebSocketClient {
-
-    MessageHandlerRegistry messageHandlerRegistry;
+class MyWebSocketClient extends WebSocketClient {
+    // todo: this class should be singleton instead of its helper. For now this class is package private.
+    private MessageHandlerRegistry messageHandlerRegistry;
 
     /**
      * Initialize all the variables
@@ -34,10 +35,18 @@ public class MyWebSocketClient extends WebSocketClient {
 
     @Override
     public void onTextReceived(String message) {
-        Log.i("WebSocket", "Message received");
+        Log.i("WebSocket", "Message received " + message);
         // todo : get type & data from message
-        Objects.requireNonNull(this.messageHandlerRegistry.get(MessageHandlerType.START_BUTTON_MESSAGE_HANDLER))
-                .handleMessage(message);
+        if (ObjectJsonConverter.isJson(message)) {
+            MessageHandlerType type = ObjectJsonConverter.getMessageType(message);
+
+            Log.i("WebSocket", "Message received is a json " + message + " and type " + type);
+            Objects.requireNonNull(this.messageHandlerRegistry.get(type))
+                    .handleMessage(message);
+        } else {
+            this.messageHandlerRegistry.get(MessageHandlerType.GET_PLAYER_DATA)
+                    .handleMessage(message);
+        }
     }
 
     @Override

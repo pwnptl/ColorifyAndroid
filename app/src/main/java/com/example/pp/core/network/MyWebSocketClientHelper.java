@@ -8,10 +8,18 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 public class MyWebSocketClientHelper {
-
+    private static MyWebSocketClientHelper myWebSocketClientHelper;
     private MyWebSocketClient myWebSocketClient;
 
-    public void createWebSocketClient2() {
+    private MyWebSocketClientHelper()
+    {}
+
+    public static MyWebSocketClientHelper getInstance(){
+        if(myWebSocketClientHelper == null)
+            myWebSocketClientHelper = new MyWebSocketClientHelper();
+        return myWebSocketClientHelper;
+    }
+    public void createWebSocketClient() {
         try {
             myWebSocketClient = new MyWebSocketClient(new URI(Constants.Socket.socketURL));
         } catch (URISyntaxException e) {
@@ -23,9 +31,9 @@ public class MyWebSocketClientHelper {
         myWebSocketClient.connect();
     }
 
-    public void addHandler(MessageHandlerInterface handler)
+    public void addHandler(MessageHandlerType type, MessageHandlerInterface handler)
     {
-        myWebSocketClient.addHandler(MessageHandlerType.START_BUTTON_MESSAGE_HANDLER, handler);
+        myWebSocketClient.addHandler(type, handler);
     }
 
     public void send(MessageHandlerType handlerType, String message) {
