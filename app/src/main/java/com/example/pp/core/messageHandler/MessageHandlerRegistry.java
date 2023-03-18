@@ -1,12 +1,13 @@
 package com.example.pp.core.messageHandler;
 
+import android.util.Log;
+
 import java.util.HashMap;
 
 public class MessageHandlerRegistry {
     private static MessageHandlerRegistry messageHandlerRegistry;
 
     private MessageHandlerRegistry() {
-
         messageHandlers = new HashMap<>();
     }
 
@@ -19,10 +20,16 @@ public class MessageHandlerRegistry {
     }
 
     public void put(MessageHandlerType type, MessageHandlerInterface messageHandler) {
-        messageHandlers.put(type, messageHandler);
+        if (messageHandlers.containsKey(type))
+            Log.w(MessageHandlerRegistry.class.getName(), "messageHandler already exist : " + type);
+        else
+            messageHandlers.put(type, messageHandler);
     }
 
     public MessageHandlerInterface get(MessageHandlerType handlerType) {
-        return messageHandlers.get(handlerType);
+        if (messageHandlers.containsKey(handlerType))
+            return messageHandlers.get(handlerType);
+        else
+            throw new IllegalArgumentException("No handler Found for type " + handlerType);
     }
 }
