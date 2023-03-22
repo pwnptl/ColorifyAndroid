@@ -1,29 +1,14 @@
 package com.example.pp.core.request;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class GetPlayerRequest extends Request {
-
     private String playerId;
-
-    // todo : use lombok for constructors.
-    // AllArgsConstructor
-    public GetPlayerRequest(String playerId) {
-        this.playerId = playerId;
-    }
-
-    // NoArgsConstructor
-    public GetPlayerRequest() {
-    }
-
-    // Getter
-
-    public String getPlayerId() {
-        return playerId;
-    }
-
-    // Setter
-
-    public void setPlayerId(String playerId) {
-        this.playerId = playerId;
-    }
 }
