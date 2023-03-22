@@ -2,6 +2,7 @@ package com.example.pp.core.utility;
 
 import com.example.pp.core.messageHandler.MessageHandlerType;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import org.json.JSONArray;
@@ -18,12 +19,14 @@ public class ObjectJsonConverter {
         return gson.toJson(object);
     }
 
+    // todo: segregate payload creation in a separate Paylaod class file.
     public static String toJSONWithType(String messageType, Object obj) {
-        String jsonObj = toJSON(obj);
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty(MESSAGE_TYPE, messageType);
-        jsonObject.addProperty(MESSAGE_DATA, toJSON(obj));
-        return jsonObj;
+        Gson gson = new Gson();
+        JsonElement jsonElement = gson.toJsonTree(obj);
+        JsonObject jsonObject = (JsonObject) jsonElement;
+
+        Payload payload = new Payload(messageType, jsonObject);
+        return toJSON(payload);
     }
 
     public static MessageHandlerType getMessageType(String message) {
@@ -52,5 +55,25 @@ public class ObjectJsonConverter {
             }
         }
         return true;
+    }
+
+    private static class Payload {
+
+        private String messageType;
+        private JsonObject messageData;
+
+        // todo : use lombok for below.
+        public Payload(String messageType, JsonObject messageData){
+            this.messageData = messageData;
+            this.messageType = messageType;
+        }
+
+        public String getMessageType() {
+            return messageType;
+        }
+
+        public JsonObject getMessageData() {
+            return messageData;
+        }
     }
 }

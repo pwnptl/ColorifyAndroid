@@ -12,6 +12,8 @@ import com.example.pp.core.messageHandler.MessageHandlerInterface;
 import com.example.pp.core.messageHandler.MessageHandlerRegistry;
 import com.example.pp.core.messageHandler.MessageHandlerType;
 import com.example.pp.core.network.MyWebSocketClientHelper;
+import com.example.pp.core.request.GetPlayerRequest;
+import com.example.pp.core.utility.ObjectJsonConverter;
 import com.example.pp.utility.ConfigReader;
 
 public class LauncherActivity extends AppCompatActivity {
@@ -44,7 +46,8 @@ public class LauncherActivity extends AppCompatActivity {
 
     private final View.OnClickListener startButtonClickListener = new View.OnClickListener() {
         public void onClick(View v) {
-            myWebSocketClientHelper.send(MessageHandlerType.GET_PLAYER_DATA, "");
+            GetPlayerRequest getPlayerRequest = new GetPlayerRequest("ec29f5eb-7cbe-4b1a-bc8b-b40fe1e7d912");
+            myWebSocketClientHelper.send(MessageHandlerType.GET_PLAYER_DATA, ObjectJsonConverter.toJSON(getPlayerRequest));
         }
     };
 

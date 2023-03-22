@@ -5,6 +5,7 @@ import android.util.Log;
 import com.example.pp.core.Constants;
 import com.example.pp.core.messageHandler.MessageHandlerInterface;
 import com.example.pp.core.messageHandler.MessageHandlerType;
+import com.example.pp.core.utility.ObjectJsonConverter;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -41,9 +42,9 @@ public class MyWebSocketClientHelper {
         myWebSocketClient.addHandler(type, handler);
     }
 
-    public void send(MessageHandlerType handlerType, String message) {
-        // todo : addHandlerType in message.
-        myWebSocketClient.send(message);
+    public void send(MessageHandlerType handlerType, Object obj) {
+        String jsonMessage = ObjectJsonConverter.toJSONWithType(handlerType.name(), obj );
+        myWebSocketClient.send(jsonMessage);
     }
 
     private final MessageHandlerInterface unknownMessageHandler = new MessageHandlerInterface() {
