@@ -43,8 +43,9 @@ public class MyWebSocketClientHelper {
     }
 
     public void send(MessageHandlerType handlerType, Object obj) {
-        String jsonMessage = ObjectJsonConverter.toJSONWithType(handlerType.name(), obj );
-        myWebSocketClient.send(jsonMessage);
+        Payload payload = new Payload(handlerType.name(), obj);
+        String jsonPayload = ObjectJsonConverter.toJSON(payload);
+        myWebSocketClient.send(jsonPayload);
     }
 
     private final MessageHandlerInterface unknownMessageHandler = new MessageHandlerInterface() {
