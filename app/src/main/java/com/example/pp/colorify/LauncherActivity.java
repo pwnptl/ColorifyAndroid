@@ -2,6 +2,7 @@ package com.example.pp.colorify;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -119,9 +120,9 @@ public class LauncherActivity extends AppCompatActivity {
         @Override
         public void onClick(View view) {
             // todo : add next Activity.
-            // Intent intent = new Intent(getBaseContext(), SignoutActivity.class);
-            // intent.putExtra("USER_ID", userId);
-            // startActivity(intent);
+             Intent intent = new Intent(getBaseContext(), GameLobby.class);
+             intent.putExtra(Constants.SHARED_PREFERENCE.USER_ID, userId);
+             startActivity(intent);
         }
     };
 
