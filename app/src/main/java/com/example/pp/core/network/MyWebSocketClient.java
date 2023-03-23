@@ -38,11 +38,12 @@ class MyWebSocketClient extends WebSocketClient {
         Log.i("WebSocket", "Message received " + message);
         // todo : get type & data from message
         if (ObjectJsonConverter.isJson(message)) {
-            MessageHandlerType type = ObjectJsonConverter.getMessageType(message);
+            Payload payload = Payload.fromJson(message);
+            MessageHandlerType type = MessageHandlerType.valueOf(payload.getMessageType());
 
             Log.i("WebSocket", "Message received is a json " + message + " and type " + type);
             Objects.requireNonNull(this.messageHandlerRegistry.get(type))
-                    .handleMessage(message);
+                    .handleMessage(payload.getMessageData());
         } else {
             this.messageHandlerRegistry.get(MessageHandlerType.GET_PLAYER_DATA)
                     .handleMessage(message);
