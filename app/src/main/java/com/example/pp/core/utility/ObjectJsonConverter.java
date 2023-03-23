@@ -46,4 +46,7 @@ public class ObjectJsonConverter {
     }
 
 
+    public static <T> Object fromJson(String json, Class<T> c) {
+        return gson.fromJson(json, c);
+    }
 }
