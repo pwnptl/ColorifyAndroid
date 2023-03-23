@@ -4,15 +4,16 @@ public enum MessageHandlerType {
 
     // Requests -> should not require handler if explicit Response type is present. todo : simplify this incompetence.
     GET_PLAYER_DATA("GET_PLAYER_DATA"),
-
+    SYN("SYN"),
 
     // Responses
     PLAYER_DATA("PLAYER_DATA"),
-
+    ACK("ACK"),
 
     // Misc
-    START_BUTTON_MESSAGE_HANDLER("DATA_HANDLER"),
-    UNKNOWN("IDK"),
+    START_BUTTON_MESSAGE_HANDLER("START_BUTTON_MESSAGE_HANDLER"),
+    UNKNOWN("UNKNOWN"),
+    DEFAULT("DEFAULT"),
     ;
 
     /*
@@ -23,6 +24,11 @@ public enum MessageHandlerType {
     MessageHandlerType(String value) {
 
         this.value = value;
+    }
+
+    // todo : remove this in favor of @Getter lombok annotation.
+    public String getValue() {
+        return value;
     }
 
     public static MessageHandlerType getValue(String type) {
