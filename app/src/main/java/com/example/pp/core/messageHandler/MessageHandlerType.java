@@ -1,13 +1,17 @@
 package com.example.pp.core.messageHandler;
 
+import lombok.Getter;
+
 public enum MessageHandlerType {
 
     // Requests -> should not require handler if explicit Response type is present. todo : simplify this incompetence.
     GET_PLAYER_DATA("GET_PLAYER_DATA"),
+    CREATE_PLAYER("CREATE_PLAYER"),
     SYN("SYN"),
 
     // Responses
     PLAYER_DATA("PLAYER_DATA"),
+    PLAYER_CREATED("PLAYER_CREATED"),
     ACK("ACK"),
 
     // Misc
@@ -17,18 +21,14 @@ public enum MessageHandlerType {
     ;
 
     /*
-    * Value of the enum.
-    * */
+     * Value of the enum.
+     * */
+    @Getter
     private final String value;
 
     MessageHandlerType(String value) {
 
         this.value = value;
-    }
-
-    // todo : remove this in favor of @Getter lombok annotation.
-    public String getValue() {
-        return value;
     }
 
     public static MessageHandlerType getValue(String type) {
