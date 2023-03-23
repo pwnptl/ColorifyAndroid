@@ -1,9 +1,11 @@
 package com.example.pp.colorify;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -52,9 +54,12 @@ public class LauncherActivity extends AppCompatActivity {
     };
 
     private final MessageHandlerInterface playerDataMessageHandler = new MessageHandlerInterface() {
+        @SuppressLint("SetTextI18n")
         @Override
         public void handleMessage(String message) {
             Log.i(MessageHandlerRegistry.class.getName(), "message Processing");
+            final TextView dummyResponseView = findViewById(R.id.dummyResponseView);
+            dummyResponseView.setText("player_data " + message);
         }
     };
 
@@ -65,6 +70,8 @@ public class LauncherActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     try {
+                        final TextView dummyResponseView = findViewById(R.id.dummyResponseView);
+                        dummyResponseView.setText(message);
                         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
                     } catch (Exception e) {
                         e.printStackTrace();
