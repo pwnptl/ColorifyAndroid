@@ -2,7 +2,6 @@ package com.example.pp.core.network;
 
 import android.util.Log;
 
-import com.example.pp.core.messageHandler.MessageHandlerInterface;
 import com.example.pp.core.messageHandler.MessageHandlerRegistry;
 import com.example.pp.core.messageHandler.MessageHandlerType;
 import com.example.pp.core.utility.ObjectJsonConverter;
@@ -10,6 +9,7 @@ import com.example.pp.core.utility.ObjectJsonConverter;
 import java.net.URI;
 import java.util.Objects;
 
+import kotlin.NotImplementedError;
 import tech.gusavila92.websocketclient.WebSocketClient;
 
 class MyWebSocketClient extends WebSocketClient {
@@ -28,9 +28,9 @@ class MyWebSocketClient extends WebSocketClient {
 
     @Override
     public void onOpen() {
-
         Log.i("WebSocket", "Session is starting");
-        this.send("Hello World!");
+        String payload = new Payload(MessageHandlerType.DEFAULT.getValue(), "HelloWorld").asJson();
+        this.send(payload);
     }
 
     @Override
@@ -51,33 +51,29 @@ class MyWebSocketClient extends WebSocketClient {
 
     @Override
     public void onBinaryReceived(byte[] data) {
-
+        throw new NotImplementedError("not implemented");
     }
 
     @Override
     public void onPingReceived(byte[] data) {
-
+        throw new NotImplementedError("not implemented");
     }
 
     @Override
     public void onPongReceived(byte[] data) {
+        throw new NotImplementedError("not implemented");
 
     }
 
     @Override
     public void onException(Exception e) {
         System.out.println(e.getMessage());
-
     }
 
     @Override
     public void onCloseReceived() {
         Log.i("WebSocket", "Closed ");
         System.out.println("onCloseReceived");
-    }
-
-    public void addHandler(MessageHandlerType type, MessageHandlerInterface messageHandler) {
-        this.messageHandlerRegistry.put(type, messageHandler);
     }
 
 }

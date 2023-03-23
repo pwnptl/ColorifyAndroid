@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.example.pp.core.Constants;
 import com.example.pp.core.messageHandler.MessageHandlerInterface;
+import com.example.pp.core.messageHandler.MessageHandlerRegistry;
 import com.example.pp.core.messageHandler.MessageHandlerType;
 import com.example.pp.core.utility.ObjectJsonConverter;
 
@@ -13,8 +14,10 @@ import java.net.URISyntaxException;
 public class MyWebSocketClientHelper {
     private static MyWebSocketClientHelper myWebSocketClientHelper;
     private MyWebSocketClient myWebSocketClient;
+    private MessageHandlerRegistry messageHandlerRegistry;
 
     private MyWebSocketClientHelper() {
+        messageHandlerRegistry = MessageHandlerRegistry.getInstance();
     }
 
     public static MyWebSocketClientHelper getInstance() {
@@ -36,10 +39,11 @@ public class MyWebSocketClientHelper {
 
         // adding default unknown type Handler.
         myWebSocketClientHelper.addHandler(MessageHandlerType.UNKNOWN, unknownMessageHandler);
+        myWebSocketClientHelper.addHandler(MessageHandlerType.DEFAULT, unknownMessageHandler);
     }
 
     public void addHandler(MessageHandlerType type, MessageHandlerInterface handler) {
-        myWebSocketClient.addHandler(type, handler);
+        messageHandlerRegistry.put(type, handler);
     }
 
     public void send(MessageHandlerType handlerType, Object obj) {
@@ -51,7 +55,7 @@ public class MyWebSocketClientHelper {
     private final MessageHandlerInterface unknownMessageHandler = new MessageHandlerInterface() {
         @Override
         public void handleMessage(String message) {
-            Log.i(this.getClass().getName(), "Unknown Message Type detected for message : " + message);
+            Log.w(this.getClass().getName(), "Unknown Message Type detected for message : " + message);
         }
     };
 }
