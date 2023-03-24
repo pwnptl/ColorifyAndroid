@@ -9,8 +9,11 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.pp.core.Constants;
+import com.example.pp.core.network.MyWebSocketClientHelper;
 
 public class GameLobby extends AppCompatActivity {
+
+    private MyWebSocketClientHelper myWebSocketClientHelper;
 
     private String userId;
     private Button joinGameButton;
@@ -31,7 +34,9 @@ public class GameLobby extends AppCompatActivity {
     }
 
     private void initHandlers() {
-
+        myWebSocketClientHelper = MyWebSocketClientHelper.getInstance();
+        myWebSocketClientHelper.createWebSocketClient();
+        // handlers ?
     }
 
     private void initViews() {

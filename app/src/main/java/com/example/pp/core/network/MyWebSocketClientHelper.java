@@ -27,19 +27,22 @@ public class MyWebSocketClientHelper {
     }
 
     public void createWebSocketClient() {
-        try {
-            myWebSocketClient = new MyWebSocketClient(new URI(Constants.Socket.socketURL));
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-        myWebSocketClient.setConnectTimeout(10000);
-        myWebSocketClient.setReadTimeout(60000);
-        myWebSocketClient.enableAutomaticReconnection(10000);
-        myWebSocketClient.connect();
+        if (myWebSocketClient != null && !myWebSocketClient.isConnected()) {
+            try {
+                myWebSocketClient = new MyWebSocketClient(new URI(Constants.Socket.socketURL));
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
+            myWebSocketClient.setConnectTimeout(10000);
+            myWebSocketClient.setReadTimeout(60000);
+            myWebSocketClient.enableAutomaticReconnection(10000);
+            myWebSocketClient.connect();
 
-        // adding default unknown type Handler.
-        myWebSocketClientHelper.addHandler(MessageHandlerType.UNKNOWN, unknownMessageHandler);
-        myWebSocketClientHelper.addHandler(MessageHandlerType.DEFAULT, unknownMessageHandler);
+            // adding default unknown type Handler.
+            myWebSocketClientHelper.addHandler(MessageHandlerType.UNKNOWN, unknownMessageHandler);
+            myWebSocketClientHelper.addHandler(MessageHandlerType.DEFAULT, unknownMessageHandler);
+        }
+
     }
 
     public void addHandler(MessageHandlerType type, MessageHandlerInterface handler) {

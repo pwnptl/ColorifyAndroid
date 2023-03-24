@@ -10,11 +10,15 @@ import java.net.URI;
 import java.util.Objects;
 
 import kotlin.NotImplementedError;
+import lombok.Getter;
 import tech.gusavila92.websocketclient.WebSocketClient;
 
 class MyWebSocketClient extends WebSocketClient {
     // todo: this class should be singleton instead of its helper. For now this class is package private.
     private MessageHandlerRegistry messageHandlerRegistry;
+
+    @Getter
+    private boolean isConnected;
 
     /**
      * Initialize all the variables
@@ -23,11 +27,13 @@ class MyWebSocketClient extends WebSocketClient {
      */
     public MyWebSocketClient(URI uri) {
         super(uri);
+        isConnected = false;
         messageHandlerRegistry = MessageHandlerRegistry.getInstance();
     }
 
     @Override
     public void onOpen() {
+        isConnected = true;
         Log.i("WebSocket", "Session is starting");
         String payload = new Payload(MessageHandlerType.DEFAULT.getValue(), "HelloWorld").asJson();
         this.send(payload);
@@ -68,6 +74,7 @@ class MyWebSocketClient extends WebSocketClient {
 
     @Override
     public void onException(Exception e) {
+        Log.e(MyWebSocketClient.class.getName(), e.getMessage());
         System.out.println(e.getMessage());
     }
 
@@ -75,6 +82,6 @@ class MyWebSocketClient extends WebSocketClient {
     public void onCloseReceived() {
         Log.i("WebSocket", "Closed ");
         System.out.println("onCloseReceived");
+        isConnected = false;
     }
-
 }
