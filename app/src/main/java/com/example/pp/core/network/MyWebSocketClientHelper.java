@@ -27,15 +27,15 @@ public class MyWebSocketClientHelper {
     }
 
     public void createWebSocketClient() {
-        if (myWebSocketClient != null && !myWebSocketClient.isConnected()) {
+        if (myWebSocketClient == null || !myWebSocketClient.isConnected()) {
             try {
                 myWebSocketClient = new MyWebSocketClient(new URI(Constants.Socket.socketURL));
             } catch (URISyntaxException e) {
                 e.printStackTrace();
             }
-            myWebSocketClient.setConnectTimeout(10000);
-            myWebSocketClient.setReadTimeout(60000);
-            myWebSocketClient.enableAutomaticReconnection(10000);
+            myWebSocketClient.setConnectTimeout(Constants.Socket.CONNECT_TIMEOUT_MILLIS);
+            myWebSocketClient.setReadTimeout(Constants.Socket.READ_TIMEOUT_MILLIS);
+            myWebSocketClient.enableAutomaticReconnection(Constants.Socket.AUTOMATIC_RECONNECTION_TIMEOUT_MILLIS);
             myWebSocketClient.connect();
 
             // adding default unknown type Handler.
