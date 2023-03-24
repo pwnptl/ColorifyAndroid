@@ -69,7 +69,7 @@ public class GameLobbyActivity extends AppCompatActivity {
     private final View.OnClickListener createGameButtonClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            CreateGameRequest createGameRequest = new CreateGameRequest();
+            CreateGameRequest createGameRequest = new CreateGameRequest(userId);
             myWebSocketClientHelper.send(MessageHandlerType.CREATE_GAME, createGameRequest);
         }
     };

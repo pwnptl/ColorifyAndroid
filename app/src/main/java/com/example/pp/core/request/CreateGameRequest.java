@@ -1,5 +1,10 @@
 package com.example.pp.core.request;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
 public class CreateGameRequest extends Request {
-    // Empty.
+    private final String currentPlayerId;
 }
