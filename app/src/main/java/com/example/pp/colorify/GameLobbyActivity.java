@@ -1,6 +1,7 @@
 package com.example.pp.colorify;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -9,9 +10,14 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.pp.core.Constants;
+import com.example.pp.core.messageHandler.MessageHandlerInterface;
+import com.example.pp.core.messageHandler.MessageHandlerType;
 import com.example.pp.core.network.MyWebSocketClientHelper;
+import com.example.pp.core.request.CreateGameRequest;
+import com.example.pp.core.response.CreateGameResponse;
+import com.example.pp.core.utility.ObjectJsonConverter;
 
-public class GameLobby extends AppCompatActivity {
+public class GameLobbyActivity extends AppCompatActivity {
 
     private MyWebSocketClientHelper myWebSocketClientHelper;
 
@@ -37,6 +43,9 @@ public class GameLobby extends AppCompatActivity {
         myWebSocketClientHelper = MyWebSocketClientHelper.getInstance();
         myWebSocketClientHelper.createWebSocketClient();
         // handlers ?
+
+        myWebSocketClientHelper.addHandler(MessageHandlerType.GAME_CREATED, gameCreatedMessageHandler);
+        myWebSocketClientHelper.addHandler(MessageHandlerType.GAME_READY, gameReadyMessageHandler);
     }
 
     private void initViews() {
@@ -60,13 +69,46 @@ public class GameLobby extends AppCompatActivity {
     private final View.OnClickListener createGameButtonClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            // todo:
+            CreateGameRequest createGameRequest = new CreateGameRequest();
+            myWebSocketClientHelper.send(MessageHandlerType.CREATE_GAME, createGameRequest);
         }
     };
     private final View.OnClickListener joinGameButtonClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            // todo:
+
+        }
+    };
+
+
+    private final MessageHandlerInterface gameCreatedMessageHandler = new MessageHandlerInterface() {
+        @Override
+        public void handleMessage(String message) {
+            Log.i(GameLobbyActivity.class.getName(), "gameCreatedMessageHandler message received " + message);
+            CreateGameResponse createGameResponse = (CreateGameResponse) ObjectJsonConverter.fromJson(message, CreateGameResponse.class);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    gameIdPresent(createGameResponse.getGameId(), createGameResponse.getStatus());
+                }
+            });
+        }
+    };
+
+    private void gameIdPresent(final String gameId, final String status) {
+        gameIdTextView.setText(gameId);
+        gameStatusTextView.setText(status);
+
+        createGameButton.setEnabled(false);
+        joinGameButton.setEnabled(false);
+        gameIdEditText.setEnabled(false);
+    }
+
+
+    private MessageHandlerInterface gameReadyMessageHandler = new MessageHandlerInterface() {
+        @Override
+        public void handleMessage(String message) {
+            // todo : next Activity Yaay.
         }
     };
 }

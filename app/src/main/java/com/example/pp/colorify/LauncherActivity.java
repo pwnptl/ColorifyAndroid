@@ -120,7 +120,7 @@ public class LauncherActivity extends AppCompatActivity {
         @Override
         public void onClick(View view) {
             // todo : add next Activity.
-             Intent intent = new Intent(getBaseContext(), GameLobby.class);
+             Intent intent = new Intent(getBaseContext(), GameLobbyActivity.class);
              intent.putExtra(Constants.SHARED_PREFERENCE.USER_ID, userId);
              startActivity(intent);
         }
