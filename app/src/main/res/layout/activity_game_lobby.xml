@@ -34,7 +34,9 @@
                 android:layout_marginStart="16dp"
                 android:ems="10"
                 android:hint="Enter Game Id"
-                android:inputType="textPersonName"
+                android:inputType="textCapCharacters"
+                android:singleLine="true"
+                android:textAllCaps="true"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
