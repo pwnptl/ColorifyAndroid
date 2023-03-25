@@ -1,5 +1,6 @@
 package com.example.pp.colorify;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -14,7 +15,9 @@ import com.example.pp.core.messageHandler.MessageHandlerInterface;
 import com.example.pp.core.messageHandler.MessageHandlerType;
 import com.example.pp.core.network.MyWebSocketClientHelper;
 import com.example.pp.core.request.CreateGameRequest;
+import com.example.pp.core.request.JoinGameRequest;
 import com.example.pp.core.response.CreateGameResponse;
+import com.example.pp.core.response.JoinGameResponse;
 import com.example.pp.core.utility.ObjectJsonConverter;
 
 public class GameLobbyActivity extends AppCompatActivity {
@@ -45,6 +48,7 @@ public class GameLobbyActivity extends AppCompatActivity {
         // handlers ?
 
         myWebSocketClientHelper.addHandler(MessageHandlerType.GAME_CREATED, gameCreatedMessageHandler);
+        myWebSocketClientHelper.addHandler(MessageHandlerType.GAME_JOINED, gameJoinedMessageHandler);
         myWebSocketClientHelper.addHandler(MessageHandlerType.GAME_READY, gameReadyMessageHandler);
     }
 
@@ -73,9 +77,17 @@ public class GameLobbyActivity extends AppCompatActivity {
             myWebSocketClientHelper.send(MessageHandlerType.CREATE_GAME, createGameRequest);
         }
     };
+
     private final View.OnClickListener joinGameButtonClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
+            gameIdEditText.setText(gameIdEditText.getText().toString().toUpperCase()); // force uppercase.
+            String gameId = gameIdEditText.getText().toString();
+            if (gameId.equals(""))
+                return; // todo : 1. use StringUtils, 2. show user that gameId is empty and they need to provide it.
+
+            JoinGameRequest joinGameRequest = new JoinGameRequest(userId, gameId);
+            myWebSocketClientHelper.send(MessageHandlerType.JOIN_GAME, joinGameRequest);
 
         }
     };
@@ -105,7 +117,28 @@ public class GameLobbyActivity extends AppCompatActivity {
     }
 
 
-    private MessageHandlerInterface gameReadyMessageHandler = new MessageHandlerInterface() {
+    private final MessageHandlerInterface gameJoinedMessageHandler = new MessageHandlerInterface() {
+        @SuppressLint("SetTextI18n") // remove all @suppress
+        @Override
+        public void handleMessage(String message) {
+            JoinGameResponse joinGameResponse = (JoinGameResponse) ObjectJsonConverter.fromJson(message, JoinGameResponse.class);
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (joinGameResponse.isJoined()) {
+                        gameIdPresent(joinGameResponse.getGameId(), String.valueOf(joinGameResponse.isJoined())); // todo : correct status.
+                    } else {
+                        gameStatusTextView.setText("GameId not found");
+                        // todo: hmm, what to do here pawan??
+                    }
+                }
+            });
+        }
+    };
+
+
+    private final MessageHandlerInterface gameReadyMessageHandler = new MessageHandlerInterface() {
         @Override
         public void handleMessage(String message) {
             // todo : next Activity Yaay.
