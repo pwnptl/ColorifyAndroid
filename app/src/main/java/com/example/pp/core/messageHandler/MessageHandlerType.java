@@ -7,6 +7,7 @@ public enum MessageHandlerType {
     // Requests -> should not require handler if explicit Response type is present. todo : simplify this incompetence.
     GET_PLAYER_DATA("GET_PLAYER_DATA"),
     CREATE_PLAYER("CREATE_PLAYER"),
+    REGISTER_PLAYER_SESSION("REGISTER_PLAYER_SESSION"),
     CREATE_GAME("CREATE_GAME"),
     JOIN_GAME("JOIN_GAME"),
     SYN("SYN"),
@@ -14,6 +15,7 @@ public enum MessageHandlerType {
     // Responses
     PLAYER_DATA("PLAYER_DATA"),
     PLAYER_CREATED("PLAYER_CREATED"),
+    PLAYER_SESSION_REGISTERED("PLAYER_SESSION_REGISTERED"),
     GAME_CREATED("GAME_CREATED"),
     GAME_JOINED("GAME_JOINED"),
     ACK("ACK"),
