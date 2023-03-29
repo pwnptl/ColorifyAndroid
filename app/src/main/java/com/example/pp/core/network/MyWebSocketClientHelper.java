@@ -49,6 +49,10 @@ public class MyWebSocketClientHelper {
         messageHandlerRegistry.put(type, handler);
     }
 
+    public void removeHandler(MessageHandlerType type) {
+        messageHandlerRegistry.remove(type);
+    }
+
     public void send(MessageHandlerType handlerType, Object obj) {
         Payload payload = new Payload(handlerType.name(), obj);
         String jsonPayload = ObjectJsonConverter.toJSON(payload);

@@ -32,4 +32,12 @@ public class MessageHandlerRegistry {
         else
             throw new IllegalArgumentException("No handler Found for type " + handlerType);
     }
+
+    public void remove(MessageHandlerType type) {
+        if (messageHandlers.containsKey(type))
+            messageHandlers.remove(type);
+        else
+            Log.w(MessageHandlerRegistry.class.getName(), "messageHandler did not exist : " + type);
+
+    }
 }
