@@ -13,6 +13,7 @@ import android.widget.EditText;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.pp.core.Constants;
+import com.example.pp.core.UserManagement.UserManager;
 import com.example.pp.core.messageHandler.MessageHandlerInterface;
 import com.example.pp.core.messageHandler.MessageHandlerType;
 import com.example.pp.core.network.MyWebSocketClientHelper;
@@ -26,7 +27,6 @@ import com.example.pp.utility.ConfigReader;
 public class LauncherActivity extends AppCompatActivity {
 
     private MyWebSocketClientHelper myWebSocketClientHelper;
-    private String userId;
 
     private Button clearUserButton;
     private Button createUserButton;
@@ -58,8 +58,9 @@ public class LauncherActivity extends AppCompatActivity {
     private void initUser() {
         SharedPreferences sharedPreferences = getSharedPreferences(Constants.SHARED_PREFERENCE.NAME, Context.MODE_PRIVATE);
         if (sharedPreferences.contains(Constants.SHARED_PREFERENCE.USER_ID)) {
-            userId = sharedPreferences.getString(Constants.SHARED_PREFERENCE.USER_ID, null);
+            String userId = sharedPreferences.getString(Constants.SHARED_PREFERENCE.USER_ID, null);
             Log.i(LauncherActivity.class.getName(), "User exist in the preference : " + userId);
+            UserManager.getInstance().setUserId(userId);
             hasUser(userId);
         } else {
             Log.i(LauncherActivity.class.getName(), "User do not exist in the preferences.");
@@ -108,7 +109,7 @@ public class LauncherActivity extends AppCompatActivity {
         editor.apply();
     }
 
-    private View.OnClickListener clearUserButtonClickListner = new View.OnClickListener() {
+    private final View.OnClickListener clearUserButtonClickListner = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
             clearSharedPreferences();
@@ -116,13 +117,13 @@ public class LauncherActivity extends AppCompatActivity {
         }
     };
 
-    private View.OnClickListener nextButtonClickListner = new View.OnClickListener() {
+    private final View.OnClickListener nextButtonClickListner = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            // todo : add next Activity.
-             Intent intent = new Intent(getBaseContext(), GameLobbyActivity.class);
-             intent.putExtra(Constants.SHARED_PREFERENCE.USER_ID, userId);
-             startActivity(intent);
+            if (UserManager.getInstance().hasUserId()) {
+                Intent intent = new Intent(getBaseContext(), GameLobbyActivity.class);
+                startActivity(intent);
+            }
         }
     };
 
@@ -141,6 +142,7 @@ public class LauncherActivity extends AppCompatActivity {
         public void handleMessage(String message) {
             Log.i(LauncherActivity.class.getName(), "message + " + message);
             GetPlayerResponse getPlayerResponse = (GetPlayerResponse) ObjectJsonConverter.fromJson(message, GetPlayerResponse.class);
+            // todo : show player data on screen
 //            final TextView dummyResponseView = findViewById(R.id.dummyResponseView);
 //            dummyResponseView.setText("player_data " + message);
         }

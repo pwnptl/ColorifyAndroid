@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.pp.core.Constants;
+import com.example.pp.core.UserManagement.UserManager;
 import com.example.pp.core.messageHandler.MessageHandlerInterface;
 import com.example.pp.core.messageHandler.MessageHandlerType;
 import com.example.pp.core.network.MyWebSocketClientHelper;
@@ -24,7 +24,6 @@ public class GameLobbyActivity extends AppCompatActivity {
 
     private MyWebSocketClientHelper myWebSocketClientHelper;
 
-    private String userId;
     private Button joinGameButton;
     private Button createGameButton;
     private EditText gameIdEditText;
@@ -37,15 +36,37 @@ public class GameLobbyActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_lobby);
 
+        validateUserId();
         initViews();
-        getUserId();
         initHandlers();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.i(this.getClass().getName(), "OnStart");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        // removing handlers as handlers are using previous instance of activity.
+        myWebSocketClientHelper.removeHandler(MessageHandlerType.GAME_CREATED);
+        myWebSocketClientHelper.removeHandler(MessageHandlerType.GAME_JOINED);
+        myWebSocketClientHelper.removeHandler(MessageHandlerType.GAME_READY);
+
+    }
+
+    private void validateUserId() {
+        if (!UserManager.getInstance().hasUserId())
+            // todo:
+            throw new IllegalArgumentException("todo: implement going back to previous activity.");
+    }
+
     private void initHandlers() {
+        Log.i(this.getClass().getName(), "adding handlers");
         myWebSocketClientHelper = MyWebSocketClientHelper.getInstance();
         myWebSocketClientHelper.createWebSocketClient();
-        // handlers ?
 
         myWebSocketClientHelper.addHandler(MessageHandlerType.GAME_CREATED, gameCreatedMessageHandler);
         myWebSocketClientHelper.addHandler(MessageHandlerType.GAME_JOINED, gameJoinedMessageHandler);
@@ -65,15 +86,10 @@ public class GameLobbyActivity extends AppCompatActivity {
         createGameButton.setOnClickListener(createGameButtonClickListener);
     }
 
-    private void getUserId() {
-        this.userId = getIntent().getStringExtra(Constants.SHARED_PREFERENCE.USER_ID);
-        userTextView.setText(userId);
-    }
-
     private final View.OnClickListener createGameButtonClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            CreateGameRequest createGameRequest = new CreateGameRequest(userId);
+            CreateGameRequest createGameRequest = new CreateGameRequest(UserManager.getInstance().getUserId());
             myWebSocketClientHelper.send(MessageHandlerType.CREATE_GAME, createGameRequest);
         }
     };
@@ -86,36 +102,44 @@ public class GameLobbyActivity extends AppCompatActivity {
             if (gameId.equals(""))
                 return; // todo : 1. use StringUtils, 2. show user that gameId is empty and they need to provide it.
 
-            JoinGameRequest joinGameRequest = new JoinGameRequest(userId, gameId);
+            JoinGameRequest joinGameRequest = new JoinGameRequest(UserManager.getInstance().getUserId(), gameId);
             myWebSocketClientHelper.send(MessageHandlerType.JOIN_GAME, joinGameRequest);
-
         }
     };
-
 
     private final MessageHandlerInterface gameCreatedMessageHandler = new MessageHandlerInterface() {
         @Override
         public void handleMessage(String message) {
             Log.i(GameLobbyActivity.class.getName(), "gameCreatedMessageHandler message received " + message);
             CreateGameResponse createGameResponse = (CreateGameResponse) ObjectJsonConverter.fromJson(message, CreateGameResponse.class);
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    gameIdPresent(createGameResponse.getGameId(), createGameResponse.getStatus());
-                }
-            });
+
+            gameIdPresent(createGameResponse.getGameId(), createGameResponse.getStatus());
+
+        }
+    };
+
+    final Runnable action = new Runnable() {
+        @Override
+        public void run() {
+            gameIdTextView.setText("text");
         }
     };
 
     private void gameIdPresent(final String gameId, final String status) {
-        gameIdTextView.setText(gameId);
-        gameStatusTextView.setText(status);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
 
-        createGameButton.setEnabled(false);
-        joinGameButton.setEnabled(false);
-        gameIdEditText.setEnabled(false);
+                gameIdTextView.setText(gameId);
+                gameStatusTextView.setText(status);
+
+                createGameButton.setEnabled(false);
+                joinGameButton.setEnabled(false);
+                gameIdEditText.setEnabled(false);
+            }
+        });
+
     }
-
 
     private final MessageHandlerInterface gameJoinedMessageHandler = new MessageHandlerInterface() {
         @SuppressLint("SetTextI18n") // remove all @suppress
@@ -123,17 +147,13 @@ public class GameLobbyActivity extends AppCompatActivity {
         public void handleMessage(String message) {
             JoinGameResponse joinGameResponse = (JoinGameResponse) ObjectJsonConverter.fromJson(message, JoinGameResponse.class);
 
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (joinGameResponse.isJoined()) {
-                        gameIdPresent(joinGameResponse.getGameId(), String.valueOf(joinGameResponse.isJoined())); // todo : correct status.
-                    } else {
-                        gameStatusTextView.setText("GameId not found");
-                        // todo: hmm, what to do here pawan??
-                    }
-                }
-            });
+            if (joinGameResponse.isJoined()) {
+                gameIdPresent(joinGameResponse.getGameId(), String.valueOf(joinGameResponse.isJoined())); // todo : correct status.
+            } else {
+                // new UI thread.
+                gameStatusTextView.setText("GameId not found");
+                // todo: hmm, what to do here pawan??
+            }
         }
     };
 
