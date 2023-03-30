@@ -13,6 +13,7 @@ import android.widget.EditText;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.pp.core.Constants;
+import com.example.pp.core.UserManagement.UserManagementHelper;
 import com.example.pp.core.UserManagement.UserManager;
 import com.example.pp.core.messageHandler.MessageHandlerInterface;
 import com.example.pp.core.messageHandler.MessageHandlerType;
@@ -103,7 +104,7 @@ public class LauncherActivity extends AppCompatActivity {
         }
     };
 
-    private void setSharedPreferences(String name) {
+    private void setSharedPreferenceUserName(String name) {
         SharedPreferences.Editor editor = getSharedPreferences(Constants.SHARED_PREFERENCE.NAME, Context.MODE_PRIVATE).edit();
         editor.putString(Constants.SHARED_PREFERENCE.USER_ID, name);
         editor.apply();
@@ -153,7 +154,8 @@ public class LauncherActivity extends AppCompatActivity {
         public void handleMessage(String message) {
             CreatePlayerResponse createPlayerResponse = CreatePlayerResponse.fromJson(message);
             Log.i(LauncherActivity.class.getName(), "Player Created " + createPlayerResponse.getPlayerId());
-            setSharedPreferences(createPlayerResponse.getPlayerId());
+            setSharedPreferenceUserName(createPlayerResponse.getPlayerId());
+            new UserManagementHelper().syncUserWithServer();
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {

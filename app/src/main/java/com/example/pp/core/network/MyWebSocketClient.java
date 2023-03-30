@@ -2,6 +2,7 @@ package com.example.pp.core.network;
 
 import android.util.Log;
 
+import com.example.pp.core.UserManagement.UserManagementHelper;
 import com.example.pp.core.messageHandler.MessageHandlerRegistry;
 import com.example.pp.core.messageHandler.MessageHandlerType;
 import com.example.pp.core.utility.ObjectJsonConverter;
@@ -35,8 +36,8 @@ class MyWebSocketClient extends WebSocketClient {
     public void onOpen() {
         isConnected = true;
         Log.i("WebSocket", "Session is starting");
-        String payload = new Payload(MessageHandlerType.DEFAULT.getValue(), "HelloWorld").asJson();
-        this.send(payload);
+        // send UserId to the server after Connecting to the Socket. todo: there should be a better way to support this.
+        new UserManagementHelper().syncUserWithServer();
     }
 
     @Override
