@@ -3,6 +3,7 @@ package com.example.pp.core.network;
 import android.util.Log;
 
 import com.example.pp.core.Constants;
+import com.example.pp.core.UserManagement.UserManagementHelper;
 import com.example.pp.core.messageHandler.MessageHandlerInterface;
 import com.example.pp.core.messageHandler.MessageHandlerRegistry;
 import com.example.pp.core.messageHandler.MessageHandlerType;
@@ -41,6 +42,7 @@ public class MyWebSocketClientHelper {
             // adding default unknown type Handler.
             myWebSocketClientHelper.addHandler(MessageHandlerType.UNKNOWN, unknownMessageHandler);
             myWebSocketClientHelper.addHandler(MessageHandlerType.DEFAULT, unknownMessageHandler);
+            myWebSocketClientHelper.addHandler(MessageHandlerType.PLAYER_SESSION_REGISTERED, new UserManagementHelper().getPlayerRegistrationHandler());
         }
 
     }
