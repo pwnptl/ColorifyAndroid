@@ -20,6 +20,7 @@ public enum MessageHandlerType {
     GAME_JOINED("GAME_JOINED"),
     ACK("ACK"),
 
+    // server data pushes.
     GAME_READY("GAME_READY"),
 
     // Misc

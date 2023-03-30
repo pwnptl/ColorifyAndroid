@@ -161,7 +161,7 @@ public class GameLobbyActivity extends AppCompatActivity {
     private final MessageHandlerInterface gameReadyMessageHandler = new MessageHandlerInterface() {
         @Override
         public void handleMessage(String message) {
-            // todo : next Activity Yaay.
+           Log.i(GameLobbyActivity.class.getName(), "gameReadyMessageHandler " + message);
         }
     };
 }
