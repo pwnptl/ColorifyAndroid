@@ -25,7 +25,7 @@ public class UserManagementHelper {
         public void handleMessage(String message) {
             RegisterPlayerSessionResponse response = (RegisterPlayerSessionResponse) ObjectJsonConverter.fromJson(message, RegisterPlayerSessionResponse.class);
             if (response.isRegistered())
-                Log.i(UserManagementHelper.class.getName(), "player Session Registered");
+                Log.i(UserManagementHelper.class.getName(), "player Session Registered with sessionId " + response.getSessionId());
             else
                 // todo : handle this in a better way. Should not throw Exception. instead there should be retry.
                 throw new RuntimeException("User Session is not registered. ");
