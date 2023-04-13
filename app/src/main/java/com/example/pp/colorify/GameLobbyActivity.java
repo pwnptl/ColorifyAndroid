@@ -1,6 +1,7 @@
 package com.example.pp.colorify;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.pp.core.GameState;
 import com.example.pp.core.UserManagement.UserManager;
 import com.example.pp.core.messageHandler.MessageHandlerInterface;
 import com.example.pp.core.messageHandler.MessageHandlerType;
@@ -141,6 +143,23 @@ public class GameLobbyActivity extends AppCompatActivity {
 
     }
 
+
+    private void gameIdNotPresent() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                // new UI thread.
+                gameStatusTextView.setText("GameId not found");
+                // todo: hmm, what to do here pawan??
+
+                createGameButton.setEnabled(true);
+                joinGameButton.setEnabled(true);
+                gameIdEditText.setEnabled(true);
+            }
+        });
+
+    }
+
     private final MessageHandlerInterface gameJoinedMessageHandler = new MessageHandlerInterface() {
         @SuppressLint("SetTextI18n") // remove all @suppress
         @Override
@@ -148,11 +167,15 @@ public class GameLobbyActivity extends AppCompatActivity {
             JoinGameResponse joinGameResponse = (JoinGameResponse) ObjectJsonConverter.fromJson(message, JoinGameResponse.class);
 
             if (joinGameResponse.isJoined()) {
-                gameIdPresent(joinGameResponse.getGameId(), String.valueOf(joinGameResponse.isJoined())); // todo : correct status.
+                gameIdPresent(joinGameResponse.getGameId(), String.valueOf(joinGameResponse.isJoined()));
+                if(joinGameResponse.getGameState().equals(GameState.ALL_PLAYER_JOINED))
+                {
+                    Log.i(GameLobbyActivity.class.getName(), "gameReadyMessageHandler " + message);
+                    Intent intent = new Intent(getBaseContext(), GameActivity.class);
+                    startActivity(intent);
+                }
             } else {
-                // new UI thread.
-                gameStatusTextView.setText("GameId not found");
-                // todo: hmm, what to do here pawan??
+                gameIdNotPresent();
             }
         }
     };
@@ -161,7 +184,9 @@ public class GameLobbyActivity extends AppCompatActivity {
     private final MessageHandlerInterface gameReadyMessageHandler = new MessageHandlerInterface() {
         @Override
         public void handleMessage(String message) {
-           Log.i(GameLobbyActivity.class.getName(), "gameReadyMessageHandler " + message);
+            Log.i(GameLobbyActivity.class.getName(), "gameReadyMessageHandler " + message);
+            Intent intent = new Intent(getBaseContext(), GameActivity.class);
+            startActivity(intent);
         }
     };
 }
