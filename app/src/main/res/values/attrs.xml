@@ -1,0 +1,8 @@
+<resources>
+    <declare-styleable name="BoardView">
+        <attr name="boardSize" format="integer" />
+    </declare-styleable>
+    <declare-styleable name="PaletteView">
+        <attr name="buttonCount" format="integer" />
+    </declare-styleable>
+</resources>
