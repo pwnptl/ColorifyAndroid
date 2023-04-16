@@ -38,8 +38,8 @@ public class GameLobbyActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_lobby);
 
-        validateUserId();
         initViews();
+        validateUserId();
         initHandlers();
     }
 
@@ -63,6 +63,8 @@ public class GameLobbyActivity extends AppCompatActivity {
         if (!UserManager.getInstance().hasUserId())
             // todo:
             throw new IllegalArgumentException("todo: implement going back to previous activity.");
+        else
+            userTextView.setText(UserManager.getInstance().getUserId());
     }
 
     private void initHandlers() {
@@ -117,13 +119,6 @@ public class GameLobbyActivity extends AppCompatActivity {
 
             gameIdPresent(createGameResponse.getGameId(), createGameResponse.getStatus());
 
-        }
-    };
-
-    final Runnable action = new Runnable() {
-        @Override
-        public void run() {
-            gameIdTextView.setText("text");
         }
     };
 
