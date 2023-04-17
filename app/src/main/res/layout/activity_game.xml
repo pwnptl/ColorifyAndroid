@@ -15,24 +15,44 @@
         app:boardSize="10"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.491"
+        app:layout_constraintHorizontal_bias="0.487"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.202" />
+        app:layout_constraintTop_toBottomOf="@+id/scoreBoard_p1"
+        app:layout_constraintVertical_bias="0.074" />
 
     <view
         class="com.example.pp.core.customViews.PaletteView"
-
         android:layout_width="399dp"
         android:layout_height="81dp"
-        android:layout_marginBottom="72dp"
         android:background="#eeeeee"
         app:buttonCount="4"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/boardView"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintTop_toBottomOf="@+id/scoreBoard_p2"
+        app:layout_constraintVertical_bias="0.36" />
+
+    <view
+        android:id="@+id/scoreBoard_p1"
+        class="com.example.pp.core.customViews.ScoreBoardView"
+        android:layout_width="402dp"
+        android:layout_height="44dp"
+        android:layout_marginTop="32dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.666"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <view
+        android:id="@+id/scoreBoard_p2"
+        class="com.example.pp.core.customViews.ScoreBoardView"
+        android:layout_width="402dp"
+        android:layout_height="44dp"
+        android:layout_marginTop="28dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.444"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/boardView" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
