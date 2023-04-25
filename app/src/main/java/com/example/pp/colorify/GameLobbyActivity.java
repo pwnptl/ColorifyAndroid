@@ -70,7 +70,6 @@ public class GameLobbyActivity extends AppCompatActivity {
     private void initHandlers() {
         Log.i(this.getClass().getName(), "adding handlers");
         myWebSocketClientHelper = MyWebSocketClientHelper.getInstance();
-        myWebSocketClientHelper.createWebSocketClient();
 
         myWebSocketClientHelper.addHandler(MessageHandlerType.GAME_CREATED, gameCreatedMessageHandler);
         myWebSocketClientHelper.addHandler(MessageHandlerType.GAME_JOINED, gameJoinedMessageHandler);

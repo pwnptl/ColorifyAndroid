@@ -87,7 +87,6 @@ public class LauncherActivity extends AppCompatActivity {
 
     private void createWebsocketAndAddHandlers() {
         myWebSocketClientHelper = MyWebSocketClientHelper.getInstance();
-        myWebSocketClientHelper.createWebSocketClient();
         myWebSocketClientHelper.addHandler(MessageHandlerType.PLAYER_DATA, playerDataMessageHandler);
         myWebSocketClientHelper.addHandler(MessageHandlerType.PLAYER_CREATED, playerCreatedMessageHandler);
     }
