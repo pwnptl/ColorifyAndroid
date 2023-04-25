@@ -9,23 +9,27 @@ import android.widget.GridLayout;
 import android.widget.LinearLayout;
 
 import com.example.pp.colorify.R;
+import com.example.pp.core.models.ColorifyColor;
+
+import java.util.ArrayList;
 
 import lombok.Getter;
 import lombok.Setter;
 
-public class BoardView extends GridLayout {
+public class BoardView extends GridLayout { // todo: extend LinearLayout instead.
 
     @Getter
     @Setter
     private int boardSize = 10;
     private final int marginWidth = 1; // todo : set via xml.
+    private ArrayList<ColorifyColor> colors; // todo: with LinerLayout extension, this colors will also be 2D list.
 
     public BoardView(Context context) {
         super(context);
         setColumnCount(boardSize);
         setRowCount(boardSize);
         setUseDefaultMargins(true);
-        initializeBoard();
+        initializeDefaultBoard();
     }
 
     public BoardView(Context context, AttributeSet attrs) {
@@ -34,7 +38,7 @@ public class BoardView extends GridLayout {
         setColumnCount(this.boardSize);
         setRowCount(this.boardSize);
         setUseDefaultMargins(true);
-        initializeBoard();
+        initializeDefaultBoard();
     }
 
     private void setBoardSize(AttributeSet attrs) {
@@ -45,9 +49,12 @@ public class BoardView extends GridLayout {
             a.recycle();
         }
     }
+    private int getIndex(int r,int c){
+        return r * boardSize + c;
+    }
 
     public void setColor(int row, int column, int color) {
-        View square = getChildAt(row * boardSize + column);
+        View square = getChildAt(getIndex(row,column));
         square.setBackgroundColor(color);
     }
 
@@ -90,7 +97,7 @@ public class BoardView extends GridLayout {
         return childSquareSize;
     }
 
-    private View getSquare() {
+    private View getSquare(int r, int c) {
         View square = new View(getContext());
         square.setBackgroundColor(Color.CYAN);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -99,11 +106,11 @@ public class BoardView extends GridLayout {
         return square;
     }
 
-    private void initializeBoard() {
+    private void initializeDefaultBoard() {
         setPadding(0, 0, 0, 0);
         for (int i = 0; i < boardSize; i++) {
             for (int j = 0; j < boardSize; j++) {
-                addView(getSquare());
+                addView(getSquare(i, j));
             }
         }
     }
