@@ -10,26 +10,19 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-
+@Getter
 @Setter
 @AllArgsConstructor
 public class GetGameResponse extends Response {
 
-    private final String playerId;
+    private final String requesterPlayerId;
+    private final String gameId;
+    private final int totalPossiblePlayerCount;
+    private final ArrayList<String> currentPlayerIds;
 
-    private final Data data;
+    private final GameState gameState;
 
-    @Getter
-    @AllArgsConstructor
-    private class Data {
-        private final String gameId;
-        private final int totalPossiblePlayerCount;
-        private final ArrayList<String> currentPlayerIds;
+    private final Board board;
+    private final Palette palette;
 
-        private final GameState gameState;
-
-        private final Board board;
-        private final Palette palette;
-
-    }
 }
