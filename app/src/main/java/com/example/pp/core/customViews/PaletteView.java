@@ -2,7 +2,9 @@ package com.example.pp.core.customViews;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -10,16 +12,18 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.pp.colorify.R;
+import com.example.pp.core.models.ColorifyColor;
+import com.example.pp.core.models.ColorifyPalette;
 
 public class PaletteView extends LinearLayout {
 
     private int buttonCount;
 
-    private final int marginWidth = 3;
+    private static String BUTTON_ID_PREFIX = "custom_palette_button_";
 
     public PaletteView(Context context) {
         super(context);
-//        init(context );
+        init(context );
     }
 
 
@@ -45,15 +49,17 @@ public class PaletteView extends LinearLayout {
     }
 
     private void init(Context context) {
+        final int marginWidth = 3;
+
         setGravity(Gravity.CENTER);
         setOrientation(HORIZONTAL);
 
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         layoutParams.setMargins(marginWidth, marginWidth, marginWidth, marginWidth);
         for (int i = 0; i < buttonCount; ++i) {
-            Button b = getButton(context, "custom_palette_button_" + i);
+            Button b = getButton(context, BUTTON_ID_PREFIX + i);
             b.setLayoutParams(layoutParams);
-//            b.setBackgroundColor(buttonColors.get(i));
+            b.setBackgroundColor(Color.BLACK);  // adding default color as BLACK.
             addView(b);
         }
     }
@@ -61,16 +67,26 @@ public class PaletteView extends LinearLayout {
 
     private Button getButton(Context context, String id) {
         Button b = new Button(context);
-//        Log.i(this.getClass().getName(), "buttonId " + id);
-        int resourceId = getResources().getIdentifier(id, "id", null);
-//        Log.i(this.getClass().getName(), "buttonId " + resourceId);
+        int resourceId = getResources().getIdentifier(id, "id", getContext().getPackageName());
         b.setId(resourceId);
         b.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getContext(), "button clicked" + b.getId(), Toast.LENGTH_SHORT).show();
+                String resourceName = v.getResources().getResourceName(v.getId());
+                Log.i(PaletteView.class.getClass().getName(), "buttonId " + resourceName);
+                Toast.makeText(getContext(), v.getId() + " button clicked" + resourceName, Toast.LENGTH_SHORT).show();
             }
         });
         return b;
+    }
+
+    public void setPalette(ColorifyPalette palette) {
+        if (palette.getPaletteCells().size() != buttonCount)
+            throw new RuntimeException("Palette Size mismatch : " + buttonCount + " and " + palette.getPaletteCells().size());
+        for (int i = 0; i < buttonCount; ++i) {
+            int cellValue = palette.getPaletteCells().get(i).getCell();
+            ColorifyColor cellColor = ColorifyColor.valueOf(cellValue);
+            getChildAt(i).setBackgroundColor(cellColor.getColor());
+        }
     }
 }
