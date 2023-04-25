@@ -4,11 +4,13 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
 
 import com.example.pp.colorify.R;
+import com.example.pp.core.models.Board;
 import com.example.pp.core.models.ColorifyColor;
 
 import java.util.ArrayList;
@@ -29,7 +31,7 @@ public class BoardView extends GridLayout { // todo: extend LinearLayout instead
         setColumnCount(boardSize);
         setRowCount(boardSize);
         setUseDefaultMargins(true);
-        initializeDefaultBoard();
+        initializeDefaultBoard(boardSize);
     }
 
     public BoardView(Context context, AttributeSet attrs) {
@@ -38,7 +40,7 @@ public class BoardView extends GridLayout { // todo: extend LinearLayout instead
         setColumnCount(this.boardSize);
         setRowCount(this.boardSize);
         setUseDefaultMargins(true);
-        initializeDefaultBoard();
+        initializeDefaultBoard(boardSize);
     }
 
     private void setBoardSize(AttributeSet attrs) {
@@ -49,12 +51,13 @@ public class BoardView extends GridLayout { // todo: extend LinearLayout instead
             a.recycle();
         }
     }
-    private int getIndex(int r,int c){
+
+    private int getIndex(int r, int c) {
         return r * boardSize + c;
     }
 
     public void setColor(int row, int column, int color) {
-        View square = getChildAt(getIndex(row,column));
+        View square = getChildAt(getIndex(row, column));
         square.setBackgroundColor(color);
     }
 
@@ -97,7 +100,7 @@ public class BoardView extends GridLayout { // todo: extend LinearLayout instead
         return childSquareSize;
     }
 
-    private View getSquare(int r, int c) {
+    private View getNewSquare() {
         View square = new View(getContext());
         square.setBackgroundColor(Color.CYAN);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -106,13 +109,25 @@ public class BoardView extends GridLayout { // todo: extend LinearLayout instead
         return square;
     }
 
-    private void initializeDefaultBoard() {
+    private void initializeDefaultBoard(int boardSize) {
         setPadding(0, 0, 0, 0);
         for (int i = 0; i < boardSize; i++) {
             for (int j = 0; j < boardSize; j++) {
-                addView(getSquare(i, j));
+                addView(getNewSquare());
             }
         }
     }
 
+    public void setBoard(final Board board) {
+        if (board.getCols() != boardSize || board.getRows() != boardSize) {
+            Log.e(BoardView.class.getName(), "size mismatch {" + board.getRows() + "," + board.getCols() + "} and boardSize=" + boardSize);
+            throw new RuntimeException("size mismatch {" + board.getRows() + "," + board.getCols() + "} and boardSize=" + boardSize);
+        }
+        for (int r = 0; r < board.getRows(); ++r)
+            for (int c = 0; c < board.getCols(); ++c) {
+                int cellValue = board.getCell(r,c).getCell();
+                ColorifyColor cellColor = ColorifyColor.valueOf(cellValue);
+                getChildAt(getIndex(r,c)).setBackgroundColor(cellColor.getColor()); // Color
+            }
+    }
 }
