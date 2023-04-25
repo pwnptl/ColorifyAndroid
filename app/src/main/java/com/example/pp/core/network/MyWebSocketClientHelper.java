@@ -18,34 +18,35 @@ public class MyWebSocketClientHelper {
     private MyWebSocketClient myWebSocketClient;
     private MessageHandlerRegistry messageHandlerRegistry;
 
-    private MyWebSocketClientHelper() {
+    private MyWebSocketClientHelper() { // private constructor for singleton
         messageHandlerRegistry = MessageHandlerRegistry.getInstance();
     }
 
     public static MyWebSocketClientHelper getInstance() {
-        if (myWebSocketClientHelper == null)
+        if (myWebSocketClientHelper == null) {
             myWebSocketClientHelper = new MyWebSocketClientHelper();
+        }
         return myWebSocketClientHelper;
     }
 
-    public void createWebSocketClient() {
+    private void createWebSocketClient() {
         if (myWebSocketClient == null || !myWebSocketClient.isConnected()) {
             try {
                 myWebSocketClient = new MyWebSocketClient(new URI(Constants.Socket.socketURL));
+                registerDefaultHandlers();
+                connectWebSocketClient();
             } catch (URISyntaxException e) {
                 e.printStackTrace();
             }
-            myWebSocketClient.setConnectTimeout(Constants.Socket.CONNECT_TIMEOUT_MILLIS);
-            myWebSocketClient.setReadTimeout(Constants.Socket.READ_TIMEOUT_MILLIS);
-            myWebSocketClient.enableAutomaticReconnection(Constants.Socket.AUTOMATIC_RECONNECTION_TIMEOUT_MILLIS);
-            myWebSocketClient.connect();
-
-            // adding default unknown type Handler.
-            getInstance().addHandler(MessageHandlerType.UNKNOWN, unknownMessageHandler);
-            getInstance().addHandler(MessageHandlerType.DEFAULT, unknownMessageHandler);
-            getInstance().addHandler(MessageHandlerType.PLAYER_SESSION_REGISTERED, new UserManagementHelper().getPlayerRegistrationHandler());
         }
 
+    }
+
+    private void registerDefaultHandlers() {
+        // adding default unknown type Handler.
+        getInstance().addHandler(MessageHandlerType.UNKNOWN, unknownMessageHandler);
+        getInstance().addHandler(MessageHandlerType.DEFAULT, unknownMessageHandler);
+        getInstance().addHandler(MessageHandlerType.PLAYER_SESSION_REGISTERED, new UserManagementHelper().getPlayerRegistrationHandler());
     }
 
     public void addHandler(MessageHandlerType type, MessageHandlerInterface handler) {
@@ -59,7 +60,22 @@ public class MyWebSocketClientHelper {
     public void send(MessageHandlerType handlerType, Request obj) {
         Payload payload = new Payload(handlerType.name(), obj);
         String jsonPayload = ObjectJsonConverter.toJSON(payload);
-        myWebSocketClient.send(jsonPayload);
+        getSocketClient().send(jsonPayload);
+    }
+
+    private MyWebSocketClient getSocketClient() {
+        if (myWebSocketClient == null)
+            createWebSocketClient();
+        else if (!myWebSocketClient.isConnected())
+            connectWebSocketClient();
+        return myWebSocketClient;
+    }
+
+    private void connectWebSocketClient() {
+        myWebSocketClient.setConnectTimeout(Constants.Socket.CONNECT_TIMEOUT_MILLIS);
+        myWebSocketClient.setReadTimeout(Constants.Socket.READ_TIMEOUT_MILLIS);
+        myWebSocketClient.enableAutomaticReconnection(Constants.Socket.AUTOMATIC_RECONNECTION_TIMEOUT_MILLIS);
+        myWebSocketClient.connect();
     }
 
     private final MessageHandlerInterface unknownMessageHandler = new MessageHandlerInterface() {
