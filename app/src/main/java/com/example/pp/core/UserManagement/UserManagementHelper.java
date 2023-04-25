@@ -16,7 +16,14 @@ public class UserManagementHelper {
         if (UserManager.getInstance().hasUserId()) {
             RegisterPlayerSessionRequest request = new RegisterPlayerSessionRequest(UserManager.getInstance().getUserId());
             MyWebSocketClientHelper.getInstance().send(MessageHandlerType.REGISTER_PLAYER_SESSION, request);
+        } else {
+            Log.w(UserManagementHelper.class.getName(), "userManager does not have the user.");
         }
+        redirectToUserActivity();
+    }
+
+    private void redirectToUserActivity() {
+        // todo: implement this;
     }
 
     @Getter
