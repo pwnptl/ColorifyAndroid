@@ -21,6 +21,7 @@
         app:layout_constraintVertical_bias="0.074" />
 
     <view
+        android:id="@+id/gameActivity_palette"
         class="com.example.pp.core.customViews.PaletteView"
         android:layout_width="399dp"
         android:layout_height="81dp"
