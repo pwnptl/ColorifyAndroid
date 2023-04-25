@@ -7,6 +7,7 @@ import com.example.pp.core.UserManagement.UserManagementHelper;
 import com.example.pp.core.messageHandler.MessageHandlerInterface;
 import com.example.pp.core.messageHandler.MessageHandlerRegistry;
 import com.example.pp.core.messageHandler.MessageHandlerType;
+import com.example.pp.core.request.Request;
 import com.example.pp.core.utility.ObjectJsonConverter;
 
 import java.net.URI;
@@ -40,9 +41,9 @@ public class MyWebSocketClientHelper {
             myWebSocketClient.connect();
 
             // adding default unknown type Handler.
-            myWebSocketClientHelper.addHandler(MessageHandlerType.UNKNOWN, unknownMessageHandler);
-            myWebSocketClientHelper.addHandler(MessageHandlerType.DEFAULT, unknownMessageHandler);
-            myWebSocketClientHelper.addHandler(MessageHandlerType.PLAYER_SESSION_REGISTERED, new UserManagementHelper().getPlayerRegistrationHandler());
+            getInstance().addHandler(MessageHandlerType.UNKNOWN, unknownMessageHandler);
+            getInstance().addHandler(MessageHandlerType.DEFAULT, unknownMessageHandler);
+            getInstance().addHandler(MessageHandlerType.PLAYER_SESSION_REGISTERED, new UserManagementHelper().getPlayerRegistrationHandler());
         }
 
     }
@@ -55,7 +56,7 @@ public class MyWebSocketClientHelper {
         messageHandlerRegistry.remove(type);
     }
 
-    public void send(MessageHandlerType handlerType, Object obj) {
+    public void send(MessageHandlerType handlerType, Request obj) {
         Payload payload = new Payload(handlerType.name(), obj);
         String jsonPayload = ObjectJsonConverter.toJSON(payload);
         myWebSocketClient.send(jsonPayload);
