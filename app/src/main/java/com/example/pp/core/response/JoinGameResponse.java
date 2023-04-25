@@ -12,7 +12,7 @@ import lombok.Getter;
 public class JoinGameResponse extends Response {
     // todo : add reason type in Response in case of failures to show on frontend.
     private final String gameId;
-    private final boolean isJoined;
+    private final boolean joined;
     private ArrayList<String> joinedPlayers;
     private GameState gameState;
 }

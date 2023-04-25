@@ -2,7 +2,7 @@ package com.example.pp.core.response;
 
 import com.example.pp.core.GameState;
 import com.example.pp.core.models.Board;
-import com.example.pp.core.models.Palette;
+import com.example.pp.core.models.ColorifyPalette;
 
 import java.util.ArrayList;
 
@@ -23,6 +23,6 @@ public class GetGameResponse extends Response {
     private final GameState gameState;
 
     private final Board board;
-    private final Palette palette;
+    private final ColorifyPalette palette;
 
 }
