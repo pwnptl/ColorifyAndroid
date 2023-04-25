@@ -25,6 +25,7 @@ public class MyWebSocketClientHelper {
     public static MyWebSocketClientHelper getInstance() {
         if (myWebSocketClientHelper == null) {
             myWebSocketClientHelper = new MyWebSocketClientHelper();
+            myWebSocketClientHelper.createWebSocketClient();
         }
         return myWebSocketClientHelper;
     }
@@ -66,8 +67,8 @@ public class MyWebSocketClientHelper {
     private MyWebSocketClient getSocketClient() {
         if (myWebSocketClient == null)
             createWebSocketClient();
-        else if (!myWebSocketClient.isConnected())
-            connectWebSocketClient();
+//        else if (!myWebSocketClient.isConnected())
+//            connectWebSocketClient();
         return myWebSocketClient;
     }
 
