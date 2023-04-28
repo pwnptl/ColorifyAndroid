@@ -73,7 +73,7 @@ public class PaletteView extends LinearLayout {
             @Override
             public void onClick(View v) {
                 String resourceName = v.getResources().getResourceName(v.getId());
-                Log.i(PaletteView.class.getClass().getName(), "buttonId " + resourceName);
+                Log.i(PaletteView.class.getName(), "buttonId " + resourceName);
                 Toast.makeText(getContext(), v.getId() + " button clicked" + resourceName, Toast.LENGTH_SHORT).show();
             }
         });
