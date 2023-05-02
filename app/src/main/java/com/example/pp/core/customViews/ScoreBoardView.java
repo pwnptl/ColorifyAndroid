@@ -37,6 +37,6 @@ public class ScoreBoardView extends TableLayout {
         TextView percentTextView = this.findViewById(R.id.scoreBoard_scorePercent);
 
         numericalTextView.setText(captured + "/" + total);
-        percentTextView.setText((captured*100)/total);
+        percentTextView.setText(Integer.toString((captured*100)/total) + "%");
     }
 }
