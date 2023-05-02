@@ -162,7 +162,7 @@ public class GameLobbyActivity extends AppCompatActivity {
 
             if (joinGameResponse.isJoined()) {
                 gameIdPresent(joinGameResponse.getGameId(), String.valueOf(joinGameResponse.isJoined()));
-                if(joinGameResponse.getGameState().equals(GameState.ALL_PLAYER_JOINED))
+                if(joinGameResponse.getGameState().equals(GameState.START))
                 {
                     Log.i(GameLobbyActivity.class.getName(), "gameReadyMessageHandler " + message);
                     Intent intent = new Intent(getBaseContext(), GameActivity.class);
