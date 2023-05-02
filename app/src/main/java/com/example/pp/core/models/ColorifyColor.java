@@ -23,4 +23,13 @@ public enum ColorifyColor {
     public static ColorifyColor valueOf(int cellValue) {
         return values()[cellValue];
     }
+
+    public static int getIndex(int color) {
+        for (int i = 0; i < values().length; i++) {
+            if (values()[i].color == color) {
+                return i;
+            }
+        }
+        throw new IllegalArgumentException("Unsupported Color value: " + color);
+    }
 }
