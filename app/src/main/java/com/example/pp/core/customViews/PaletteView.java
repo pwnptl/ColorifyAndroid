@@ -12,8 +12,12 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.pp.colorify.R;
+import com.example.pp.core.models.Cell;
 import com.example.pp.core.models.ColorifyColor;
 import com.example.pp.core.models.ColorifyPalette;
+
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class PaletteView extends LinearLayout {
 
@@ -23,7 +27,7 @@ public class PaletteView extends LinearLayout {
 
     public PaletteView(Context context) {
         super(context);
-        init(context );
+        init(context);
     }
 
 
@@ -83,10 +87,41 @@ public class PaletteView extends LinearLayout {
     public void setPalette(ColorifyPalette palette) {
         if (palette.getPaletteCells().size() != buttonCount)
             throw new RuntimeException("Palette Size mismatch : " + buttonCount + " and " + palette.getPaletteCells().size());
+        ArrayList<Cell> paletteCells = palette.getPaletteCells();
+        Collections.shuffle(paletteCells); // palette colors are displayed in random order.
         for (int i = 0; i < buttonCount; ++i) {
-            int cellValue = palette.getPaletteCells().get(i).getCell();
+            int cellValue = paletteCells.get(i).getCell();
             ColorifyColor cellColor = ColorifyColor.valueOf(cellValue);
             getChildAt(i).setBackgroundColor(cellColor.getColor());
+        }
+    }
+
+    public void setOnClickListenerForButtons(OnClickListener paletteButtonOnclickListener) {
+        for (int i = 0; i < getChildCount(); ++i) {
+            getChildAt(i).setOnClickListener(paletteButtonOnclickListener);
+        }
+    }
+
+    public void enable(boolean enable) {
+        enablePalette(enable);
+        fadePalette(enable);
+    }
+
+
+    private void enablePalette(boolean enable) {
+        for (int i = 0; i < getChildCount(); ++i) {
+            getChildAt(i).setEnabled(enable);
+            if (!enable) getChildAt(i).setBackgroundColor(Color.GRAY);
+        }
+    }
+
+    private void fadePalette(boolean fade) {
+        int duration = fade ? 200 : 100;
+        float alph = fade ? 0.5f : 0.1f;
+
+        for (int i = 0; i < getChildCount(); ++i) {
+            View child = getChildAt(i);
+            child.animate().alpha(alph).setDuration(duration);
         }
     }
 }
