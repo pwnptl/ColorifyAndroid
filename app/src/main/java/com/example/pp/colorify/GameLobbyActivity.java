@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.pp.core.Constants;
 import com.example.pp.core.GameState;
 import com.example.pp.core.UserManagement.UserManager;
 import com.example.pp.core.messageHandler.MessageHandlerInterface;
@@ -73,7 +74,6 @@ public class GameLobbyActivity extends AppCompatActivity {
 
         myWebSocketClientHelper.addHandler(MessageHandlerType.GAME_CREATED, gameCreatedMessageHandler);
         myWebSocketClientHelper.addHandler(MessageHandlerType.GAME_JOINED, gameJoinedMessageHandler);
-        myWebSocketClientHelper.addHandler(MessageHandlerType.GAME_READY, gameReadyMessageHandler);
     }
 
     private void initViews() {
@@ -166,21 +166,12 @@ public class GameLobbyActivity extends AppCompatActivity {
                 {
                     Log.i(GameLobbyActivity.class.getName(), "gameReadyMessageHandler " + message);
                     Intent intent = new Intent(getBaseContext(), GameActivity.class);
+                    intent.putExtra(Constants.GAME.ID, joinGameResponse.getGameId());
                     startActivity(intent);
                 }
             } else {
                 gameIdNotPresent();
             }
-        }
-    };
-
-
-    private final MessageHandlerInterface gameReadyMessageHandler = new MessageHandlerInterface() {
-        @Override
-        public void handleMessage(String message) {
-            Log.i(GameLobbyActivity.class.getName(), "gameReadyMessageHandler " + message);
-            Intent intent = new Intent(getBaseContext(), GameActivity.class);
-            startActivity(intent);
         }
     };
 }
