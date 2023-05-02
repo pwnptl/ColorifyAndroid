@@ -6,6 +6,8 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.pp.core.Constants;
+import com.example.pp.core.UserManagement.UserManager;
 import com.example.pp.core.customViews.BoardView;
 import com.example.pp.core.customViews.PaletteView;
 import com.example.pp.core.customViews.ScoreBoardView;
@@ -16,12 +18,13 @@ import com.example.pp.core.request.GetGameRequest;
 import com.example.pp.core.response.GetGameResponse;
 import com.example.pp.core.utility.ObjectJsonConverter;
 
+import java.util.ArrayList;
+
 public class GameActivity extends AppCompatActivity {
 
     private MyWebSocketClientHelper myWebSocketClientHelper;
     private BoardView boardView;
-    private ScoreBoardView scoreBoardView_p1;
-    private ScoreBoardView scoreBoardView_p2;
+    private ArrayList<ScoreBoardView> scoreBoardViews;
     private PaletteView paletteView;
     private TextView gameIdTextView;
 
@@ -36,15 +39,17 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void initViews() {
+        scoreBoardViews = new ArrayList<>();
         boardView = findViewById(R.id.gameActivity_boardView);
-        scoreBoardView_p1 = findViewById(R.id.gameActivity_scoreBoard_p1);
-        scoreBoardView_p2 = findViewById(R.id.gameActivity_scoreBoard_p2);
+        scoreBoardViews.add(findViewById(R.id.gameActivity_scoreBoard_p1));
+        scoreBoardViews.add(findViewById(R.id.gameActivity_scoreBoard_p2));
         paletteView = findViewById(R.id.gameActivity_palette);
         gameIdTextView = findViewById(R.id.gameActivity_gameId);
     }
 
     private void getGame() {
-        GetGameRequest getGameRequest = new GetGameRequest("0FY9P"); // todo: get this info from last activity.
+        final String gameId = getIntent().getStringExtra(Constants.GAME.ID);
+        GetGameRequest getGameRequest = new GetGameRequest(gameId);
         myWebSocketClientHelper.send(MessageHandlerType.GET_GAME, getGameRequest);
     }
 
@@ -66,16 +71,34 @@ public class GameActivity extends AppCompatActivity {
         });
     }
 
-    private void setGameView(GetGameResponse gameResponse){
+    private void setGameView(GetGameResponse gameResponse) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 boardView.setBoard(gameResponse.getBoard());
                 paletteView.setPalette(gameResponse.getPalette());
                 gameIdTextView.setText(gameResponse.getGameId());
+                setScoreBoards(gameResponse);
             }
         });
     }
+
+    private void setScoreBoards(GetGameResponse gameResponse) {
+        // todo : Improve Impl. This function is only good for 2 players. Should be rotating strategy with preserved order to scale to more players.
+        String currentPlayerId = UserManager.getInstance().getUserId();
+        for (String pId : gameResponse.getScoreTracker().getPlayerIdToScoreMap().keySet()) {
+            if (pId.equals(currentPlayerId))
+                setScoreBoard(scoreBoardViews.get(0), pId, gameResponse);
+            else
+                setScoreBoard(scoreBoardViews.get(1), pId, gameResponse);
+        }
+    }
+
+    private void setScoreBoard(ScoreBoardView scoreBoardView, String pId, GetGameResponse gameResponse) {
+        scoreBoardView.setName(pId, pId); // todo: add name as second param.
+        scoreBoardView.setScore(gameResponse.getScoreTracker().getPlayerIdToScoreMap().get(pId).getCount(), gameResponse.getScoreTracker().getTotalCells());
+    }
+
 
     private void destroyHandlers() {
         myWebSocketClientHelper.removeHandler(MessageHandlerType.GAME_DATA);
