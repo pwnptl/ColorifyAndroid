@@ -1,8 +1,11 @@
 package com.example.pp.colorify;
 
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -13,9 +16,12 @@ import com.example.pp.core.customViews.PaletteView;
 import com.example.pp.core.customViews.ScoreBoardView;
 import com.example.pp.core.messageHandler.MessageHandlerInterface;
 import com.example.pp.core.messageHandler.MessageHandlerType;
+import com.example.pp.core.models.ColorifyColor;
 import com.example.pp.core.network.MyWebSocketClientHelper;
 import com.example.pp.core.request.GetGameRequest;
+import com.example.pp.core.request.MakeMoveRequest;
 import com.example.pp.core.response.GetGameResponse;
+import com.example.pp.core.response.MakeMoveResponse;
 import com.example.pp.core.utility.ObjectJsonConverter;
 
 import java.util.ArrayList;
@@ -27,7 +33,7 @@ public class GameActivity extends AppCompatActivity {
     private ArrayList<ScoreBoardView> scoreBoardViews;
     private PaletteView paletteView;
     private TextView gameIdTextView;
-
+    private String gameId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,11 +50,12 @@ public class GameActivity extends AppCompatActivity {
         scoreBoardViews.add(findViewById(R.id.gameActivity_scoreBoard_p1));
         scoreBoardViews.add(findViewById(R.id.gameActivity_scoreBoard_p2));
         paletteView = findViewById(R.id.gameActivity_palette);
+        paletteView.setOnClickListenerForButtons(paletteButtonOnclickListener);
         gameIdTextView = findViewById(R.id.gameActivity_gameId);
     }
 
     private void getGame() {
-        final String gameId = getIntent().getStringExtra(Constants.GAME.ID);
+        gameId = getIntent().getStringExtra(Constants.GAME.ID);
         GetGameRequest getGameRequest = new GetGameRequest(gameId);
         myWebSocketClientHelper.send(MessageHandlerType.GET_GAME, getGameRequest);
     }
@@ -61,14 +68,8 @@ public class GameActivity extends AppCompatActivity {
 
     private void initHandlers() {
         myWebSocketClientHelper = MyWebSocketClientHelper.getInstance();
-        myWebSocketClientHelper.addHandler(MessageHandlerType.GAME_DATA, new MessageHandlerInterface() {
-            @Override
-            public void handleMessage(String message) {
-                GetGameResponse gameResponse = (GetGameResponse) ObjectJsonConverter.fromJson(message, GetGameResponse.class);
-                Log.i(GameActivity.class.getName(), gameResponse.getBoard().toString());
-                setGameView(gameResponse);
-            }
-        });
+        myWebSocketClientHelper.addHandler(MessageHandlerType.GAME_DATA, gameDateMessageHandler);
+        myWebSocketClientHelper.addHandler(MessageHandlerType.MADE_MOVE, madeMoveMessageHandler);
     }
 
     private void setGameView(GetGameResponse gameResponse) {
@@ -99,8 +100,39 @@ public class GameActivity extends AppCompatActivity {
         scoreBoardView.setScore(gameResponse.getScoreTracker().getPlayerIdToScoreMap().get(pId).getCount(), gameResponse.getScoreTracker().getTotalCells());
     }
 
+    private final View.OnClickListener paletteButtonOnclickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            int color = ((ColorDrawable) v.getBackground()).getColor();
+            int index = ColorifyColor.getIndex(color);
+            String playerId = UserManager.getInstance().getUserId();
+            Toast.makeText(getApplicationContext(), ColorifyColor.valueOf(index).toString(), Toast.LENGTH_SHORT).show();
+            Log.i(GameActivity.class.getName(), "playerId:index " + playerId + ": " + index + " " + ColorifyColor.valueOf(index));
+            MakeMoveRequest makeMoveRequest = new MakeMoveRequest(playerId, gameId, index);
+            myWebSocketClientHelper.send(MessageHandlerType.MAKE_MOVE, makeMoveRequest);
+        }
+    };
+
+    private final MessageHandlerInterface gameDateMessageHandler = new MessageHandlerInterface() {
+        @Override
+        public void handleMessage(String message) {
+            GetGameResponse gameResponse = (GetGameResponse) ObjectJsonConverter.fromJson(message, GetGameResponse.class);
+            Log.i(GameActivity.class.getName(), gameResponse.getBoard().toString());
+            setGameView(gameResponse);
+        }
+    };
+
+    private final MessageHandlerInterface madeMoveMessageHandler = new MessageHandlerInterface() {
+        @Override
+        public void handleMessage(String message) {
+            MakeMoveResponse gameResponse = (MakeMoveResponse) ObjectJsonConverter.fromJson(message, MakeMoveResponse.class);
+            Log.i(GameActivity.class.getName(), gameResponse.getBoard().toString());
+            setGameView(gameResponse);
+        }
+    };
 
     private void destroyHandlers() {
         myWebSocketClientHelper.removeHandler(MessageHandlerType.GAME_DATA);
+        myWebSocketClientHelper.removeHandler(MessageHandlerType.MADE_MOVE);
     }
 }
