@@ -33,7 +33,7 @@ public class MyWebSocketClientHelper {
     private void createWebSocketClient() {
         if (myWebSocketClient == null || !myWebSocketClient.isConnected()) {
             try {
-                myWebSocketClient = new MyWebSocketClient(new URI(Constants.Socket.socketURL));
+                myWebSocketClient = new MyWebSocketClient(new URI(Constants.Socket.LOCAL_SOCKET_URL));
                 registerDefaultHandlers();
                 connectWebSocketClient();
             } catch (URISyntaxException e) {
