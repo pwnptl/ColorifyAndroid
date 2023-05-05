@@ -20,7 +20,8 @@ public class GetGameResponse extends Response {
     protected final String gameId;
     protected final int totalPossiblePlayerCount;
     protected final ArrayList<String> currentPlayerIds;
-
+    protected final String currentPlayerChance;
+    protected final int moveCount;
     protected final GameState gameState;
 
     protected final Board board;
