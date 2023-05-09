@@ -1,15 +1,16 @@
 package com.example.pp.colorify;
 
+import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.pp.core.Constants;
+import com.example.pp.core.GameState;
 import com.example.pp.core.UserManagement.UserManager;
 import com.example.pp.core.customViews.BoardView;
 import com.example.pp.core.customViews.PaletteView;
@@ -72,12 +73,25 @@ public class GameActivity extends AppCompatActivity {
         myWebSocketClientHelper.addHandler(MessageHandlerType.MADE_MOVE, madeMoveMessageHandler);
     }
 
+    private void renderGameFinishedView() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                paletteView.enable(false);
+            }
+        });
+        // todo : go to next activity after a delay.
+    }
+
     private void setGameView(GetGameResponse gameResponse) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                boolean isPlayerChance = gameResponse.getCurrentPlayerChance().equals(UserManager.getInstance().getUserId());
+                Log.i(GameActivity.class.getName(), "this player " + UserManager.getInstance().getUserId() + " ; playerChance " + gameResponse.getCurrentPlayerChance() + " " + isPlayerChance);
                 boardView.setBoard(gameResponse.getBoard());
                 paletteView.setPalette(gameResponse.getPalette());
+                paletteView.enable(isPlayerChance);
                 gameIdTextView.setText(gameResponse.getGameId());
                 setScoreBoards(gameResponse);
             }
@@ -106,7 +120,6 @@ public class GameActivity extends AppCompatActivity {
             int color = ((ColorDrawable) v.getBackground()).getColor();
             int index = ColorifyColor.getIndex(color);
             String playerId = UserManager.getInstance().getUserId();
-            Toast.makeText(getApplicationContext(), ColorifyColor.valueOf(index).toString(), Toast.LENGTH_SHORT).show();
             Log.i(GameActivity.class.getName(), "playerId:index " + playerId + ": " + index + " " + ColorifyColor.valueOf(index));
             MakeMoveRequest makeMoveRequest = new MakeMoveRequest(playerId, gameId, index);
             myWebSocketClientHelper.send(MessageHandlerType.MAKE_MOVE, makeMoveRequest);
@@ -128,8 +141,25 @@ public class GameActivity extends AppCompatActivity {
             MakeMoveResponse gameResponse = (MakeMoveResponse) ObjectJsonConverter.fromJson(message, MakeMoveResponse.class);
             Log.i(GameActivity.class.getName(), gameResponse.getBoard().toString());
             setGameView(gameResponse);
+            if (gameResponse.getGameState().equals(GameState.FINISH)) {
+                renderGameFinishedView();
+                startRewardingActivity(message);
+            }
         }
     };
+
+    private void startRewardingActivity(String gameResponseJson) {
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            Intent intent = new Intent(getBaseContext(), AwardingActivity.class);
+            intent.putExtra(Constants.GAME.GameResponse, gameResponseJson);
+            startActivity(intent);
+            finish();
+        }
+    }
 
     private void destroyHandlers() {
         myWebSocketClientHelper.removeHandler(MessageHandlerType.GAME_DATA);
