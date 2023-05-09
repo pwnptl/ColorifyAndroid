@@ -42,12 +42,10 @@ class MyWebSocketClient extends WebSocketClient {
 
     @Override
     public void onTextReceived(String message) {
-        Log.i("WebSocket", "Message received " + message);
         // todo : get type & data from message
         if (ObjectJsonConverter.isJson(message)) {
             Payload payload = Payload.fromJson(message);
             MessageHandlerType type = MessageHandlerType.valueOf(payload.getMessageType());
-
             Log.i("WebSocket", "Message received is a json " + message + " and type " + type);
             Objects.requireNonNull(this.messageHandlerRegistry.get(type))
                     .handleMessage(payload.getMessageData());
