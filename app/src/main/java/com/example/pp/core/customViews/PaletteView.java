@@ -111,13 +111,12 @@ public class PaletteView extends LinearLayout {
     private void enablePalette(boolean enable) {
         for (int i = 0; i < getChildCount(); ++i) {
             getChildAt(i).setEnabled(enable);
-            if (!enable) getChildAt(i).setBackgroundColor(Color.GRAY);
         }
     }
 
     private void fadePalette(boolean fade) {
         int duration = fade ? 200 : 100;
-        float alph = fade ? 0.5f : 0.1f;
+        float alph = fade ? 1f : 0.3f;
 
         for (int i = 0; i < getChildCount(); ++i) {
             View child = getChildAt(i);
