@@ -13,10 +13,14 @@ import com.example.pp.core.utility.ObjectJsonConverter;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import lombok.Setter;
+
 public class MyWebSocketClientHelper {
     private static MyWebSocketClientHelper myWebSocketClientHelper;
+    @Setter
+    private static String subDomain = null; // temporary subDomain until the Server have a rigid domain.
     private MyWebSocketClient myWebSocketClient;
-    private MessageHandlerRegistry messageHandlerRegistry;
+    private final MessageHandlerRegistry messageHandlerRegistry;
 
     private MyWebSocketClientHelper() { // private constructor for singleton
         messageHandlerRegistry = MessageHandlerRegistry.getInstance();
@@ -33,7 +37,11 @@ public class MyWebSocketClientHelper {
     private void createWebSocketClient() {
         if (myWebSocketClient == null || !myWebSocketClient.isConnected()) {
             try {
-                myWebSocketClient = new MyWebSocketClient(new URI(Constants.Socket.LOCAL_SOCKET_URL));
+                if (myWebSocketClient == null) {
+                    Log.i(MyWebSocketClientHelper.class.getName(), "client was null");
+                    myWebSocketClient = new MyWebSocketClient(new URI(Constants.Socket.getServeoUrl(subDomain)));
+                }
+                Log.i(MyWebSocketClientHelper.class.getName(),  "isConnected " + myWebSocketClient.isConnected());
                 registerDefaultHandlers();
                 connectWebSocketClient();
             } catch (URISyntaxException e) {
