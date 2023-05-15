@@ -3,4 +3,12 @@
     <string name="welcome_to_colorify">Welcome to Colorify</string>
     <string name="_2p">2P</string>
     <string name="start">START</string>
+    <string name="text_create_user">Create User</string>
+    <string name="text_clear_user">Clear User</string>
+    <string name="text_next">Next</string>
+    <string name="text_name">Name</string>
+    <string name="servername">ServerName</string>
+    <string name="required">Required</string>
+    <string name="connect">Connect</string>
+    <string name="server_temp_disclaimer">Choosing a Server subdomain is a temporary Solution to dynamic Subdomains which come under free tiers. Once developer onboards onto permanent Domain, this page wont be required.</string>
 </resources>
