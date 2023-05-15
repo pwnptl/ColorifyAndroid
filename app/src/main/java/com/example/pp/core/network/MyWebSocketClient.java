@@ -33,16 +33,23 @@ class MyWebSocketClient extends WebSocketClient {
     }
 
     @Override
+    public void connect() {
+        if (!isConnected) {
+            Log.i(MyWebSocketClient.class.getName(), "connect called");
+            super.connect();
+        }
+    }
+
+    @Override
     public void onOpen() {
         isConnected = true;
-        Log.i("WebSocket", "Session is starting");
+        Log.i(MyWebSocketClient.class.getName(), "Session is starting ");
         // send UserId to the server after Connecting to the Socket. todo: there should be a better way to support this.
         new UserManagementHelper().syncUserWithServer();
     }
 
     @Override
     public void onTextReceived(String message) {
-        // todo : get type & data from message
         if (ObjectJsonConverter.isJson(message)) {
             Payload payload = Payload.fromJson(message);
             MessageHandlerType type = MessageHandlerType.valueOf(payload.getMessageType());
@@ -73,14 +80,14 @@ class MyWebSocketClient extends WebSocketClient {
 
     @Override
     public void onException(Exception e) {
+        isConnected = false;
         Log.e(MyWebSocketClient.class.getName(), e.getMessage());
         System.out.println(e.getMessage());
     }
 
     @Override
     public void onCloseReceived() {
-        Log.i("WebSocket", "Closed ");
-        System.out.println("onCloseReceived");
+        Log.i(MyWebSocketClient.class.getName(), "websocket Closed");
         isConnected = false;
     }
 }
